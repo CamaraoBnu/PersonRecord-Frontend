@@ -7,7 +7,7 @@ import { ButtonEnum } from './enums/ButtonEnum';
 import { useLastButton, LastButtonProvider } from './contexts/LastButtonContext';
 import axios from 'axios';
 import styled from 'styled-components';
-import Popup from './components/PopupWrapper'; // Importando o componente Popup
+import Popup from './components/PopupWrapper';
 
 const Title = styled.h2`
   margin-bottom: 20px;
@@ -50,35 +50,28 @@ const App = () => {
   
   const generateCSVReport = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/person/getAll'); // Rota para obter todas as pessoas cadastradas
+      const response = await axios.get('http://localhost:8080/person/getAll');
       const persons = response.data;
 
-       // Nome das colunas
        const columnNames = 'Nome,Telefone,CPF,CEP,Rua,Bairro,Município,Estado,Número,Complemento\n';
 
-       // Formatar os dados como CSV
        const csvData = `${columnNames}${persons.map((person) => {
          return `${person.name},${person.phone},${person.cpf},${person.cep},${person.street},${person.district},${person.city},${person.state},${person.number},${person.comp}`;
        }).join('\n')}`;
 
-      // Criar um objeto Blob com os dados CSV
       const blob = new Blob([csvData], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
 
-      // Criar um link temporário para download do arquivo CSV
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'relatorio_pessoas.csv');
       document.body.appendChild(link);
 
-      // Simular o clique no link para iniciar o download
       link.click();
 
-      // Remover o link temporário
       document.body.removeChild(link);
     } catch (error) {
       console.error('Erro ao gerar relatório CSV:', error);
-      // Adicione a lógica para lidar com erros aqui, como exibir uma mensagem de erro para o usuário
     }
   };
 
@@ -87,9 +80,7 @@ const App = () => {
       const formattedCep = cep.replace(/\D/g, '');
       const response = await axios.get(`https://viacep.com.br/ws/${formattedCep}/json/`);
       const data = response.data;
-      // Verifica se os dados foram retornados corretamente
       if (!data.erro) {
-        // Atualiza os estados com os dados retornados
         setDistrict(data.bairro);
         setCity(data.localidade);
         setState(data.uf);
@@ -97,11 +88,9 @@ const App = () => {
         setStreet(data.logradouro);
       } else {
         console.error('CEP não encontrado');
-        // Adicione a lógica para lidar com o CEP não encontrado, como exibir uma mensagem para o usuário
       }
     } catch (error) {
       console.error('Erro ao buscar CEP:', error);
-      // Adicione a lógica para lidar com erros de requisição
     }
   };
 
@@ -135,11 +124,11 @@ const App = () => {
 
   const handleConfirmarExclusao = async () => {
     try {
-      const response = await axios.delete(`http://localhost:8080/person/delete/teste`);
+      const response = await axios.delete(`http://localhost:8080/person/delete/${cpfBuscado}`);
       const { data } = response;
       if (data) {
-        
-        console.error('foi');
+        setPopupMessage(`Cadastro com CPF: ${data.cpf}-${data.name} deletado com sucesso!`);
+        setShowSuccessPopup(true);
       } else {
           console.error('CPF não encontrado');
           setPopupMessage('CPF não encontrado');
@@ -148,7 +137,6 @@ const App = () => {
       }
     } catch (error) {
       console.error('Erro ao buscar pessoa para deletar:');
-      // Adicione a lógica para lidar com erros aqui
     }
   };
 
@@ -170,12 +158,10 @@ const App = () => {
         console.log('Dados salvos:', response.data);
         setPopupMessage('Dados salvos com sucesso!');
         setShowSuccessPopup(true);
-        // Adicione qualquer lógica adicional aqui, como atualizar o estado após salvar
       } catch (error) {
         console.error('Erro ao salvar dados:', error);
         setPopupMessage('Erro ao salvar dados.');
         setShowErrorPopup(true);
-        // Adicione a lógica para lidar com erros aqui, como exibir uma mensagem de erro para o usuário
       }
     }
     if (editavel && !excluindo && lastButton === ButtonEnum.ATUALIZAR) {
@@ -196,12 +182,10 @@ const App = () => {
           console.log('Dados atualizados:', response.data);
           setPopupMessage('Dados atualizados com sucesso!');
           setShowSuccessPopup(true);
-          // Adicione qualquer lógica adicional aqui, como atualizar o estado após salvar
         } catch (error) {
           console.error('Erro ao atualizar dados:', error);
           setPopupMessage('Erro ao atualizar dados.');
           setShowErrorPopup(true);
-          // Adicione a lógica para lidar com erros aqui, como exibir uma mensagem de erro para o usuário
         }
       } else {
         console.error('O CPF não pode ser alterado');
@@ -218,12 +202,8 @@ const App = () => {
     setShowErrorPopup(false);
   };
 
-  const handleDeletar = () => {
-    // Implemente a lógica para deletar o registro aqui
-  };
-
   const handleAtualizar = () => {
-    setEditavel(true); // Habilita a edição dos campos
+    setEditavel(true); 
     setExcluindo(false);
     setLastButton(ButtonEnum.ATUALIZAR);
   };
@@ -256,7 +236,6 @@ const App = () => {
       }
     } catch (error) {
       console.error('Erro ao buscar pessoa:', error);
-      // Adicione a lógica para lidar com erros aqui
     }
   };
 
