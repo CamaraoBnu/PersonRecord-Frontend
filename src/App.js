@@ -18,6 +18,7 @@ const App = () => {
   const [phone, setPhone] = useState('');
   const [cpf, setCpf] = useState('');
   const [cep, setCep] = useState('');
+  const [street, setStreet] = useState('');
   const [district, setDistrict] = useState('');
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
@@ -53,11 +54,11 @@ const App = () => {
       const persons = response.data;
 
        // Nome das colunas
-       const columnNames = 'Nome,Telefone,CPF,CEP,Bairro,Município,Estado,Número,Complemento\n';
+       const columnNames = 'Nome,Telefone,CPF,CEP,Rua,Bairro,Município,Estado,Número,Complemento\n';
 
        // Formatar os dados como CSV
        const csvData = `${columnNames}${persons.map((person) => {
-         return `${person.name},${person.phone},${person.cpf},${person.cep},${person.district},${person.city},${person.state},${person.number},${person.comp}`;
+         return `${person.name},${person.phone},${person.cpf},${person.cep},${person.street},${person.district},${person.city},${person.state},${person.number},${person.comp}`;
        }).join('\n')}`;
 
       // Criar um objeto Blob com os dados CSV
@@ -93,6 +94,7 @@ const App = () => {
         setCity(data.localidade);
         setState(data.uf);
         setComp(data.complemento);
+        setStreet(data.logradouro);
       } else {
         console.error('CEP não encontrado');
         // Adicione a lógica para lidar com o CEP não encontrado, como exibir uma mensagem para o usuário
@@ -116,6 +118,7 @@ const App = () => {
     setPhone('');
     setCpf('');
     setCep('');
+    setStreet('');
     setDistrict('');
     setCity('');
     setState('');
@@ -157,6 +160,7 @@ const App = () => {
           phone,
           cpf,
           cep,
+          street,
           district,
           city,
           state,
@@ -182,6 +186,7 @@ const App = () => {
             phone,
             cpf,
             cep,
+            street,
             district,
             city,
             state,
@@ -236,6 +241,7 @@ const App = () => {
         setName(data.name);
         setPhone(data.phone);
         setCep(data.cep);
+        setStreet(data.street);
         setDistrict(data.district);
         setCity(data.city);
         setState(data.state);
@@ -259,6 +265,7 @@ const App = () => {
       name !== '' ||
       phone !== '' ||
       cep !== '' ||
+      street !== '' ||
       district !== '' ||
       city !== '' ||
       state !== '' ||
@@ -327,6 +334,16 @@ const App = () => {
           disabled={!editavel || excluindo}
         />
         <Button onClick={handleSearchCep}>Buscar CEP</Button>
+      </InputWrapper>
+      <InputWrapper visivel={editavel || excluindo}>
+        <Label>Rua:</Label>
+        <Input
+          type="text"
+          value={street}
+          onChange={(e) => setStreet(e.target.value)}
+          maxLength={255}
+          disabled={!editavel || excluindo}
+        />
       </InputWrapper>
       <InputWrapper visivel={editavel || excluindo}>
         <Label>Bairro:</Label>
